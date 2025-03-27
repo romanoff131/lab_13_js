@@ -85,7 +85,7 @@ async function fetchCharacters() {
     const publicKey = "5d3eb0566587bd3984363d42e6176770";
     const privateKey = "400f43a6baf239031c0c639cd7c5e2371f1ec89e";
     const ts = new Date().getTime();  
-    const hash = md5(ts + privateKey + publicKey);
+    const hash = md5(ts + publicKey + privateKey);
 
     console.log("ts:", ts);
     console.log("publicKey:", publicKey);
