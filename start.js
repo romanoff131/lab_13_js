@@ -7,7 +7,7 @@ async function start() {
         console.log("Загруженные персонажи:", characters);
 
         if (characters.length === 0) {
-            throw new Error("Данные о персонажах отсутствуют.");
+            throw new Error("Данные о персонажах не загружены.");
         }
 
         characterCardBox.innerHTML = getCharacterCards(characters).join("");

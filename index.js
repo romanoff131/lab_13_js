@@ -83,22 +83,28 @@ function getCharacterModal(character) {
  */
 async function fetchCharacters() {
     const publicKey = "5d3eb0566587bd3984363d42e6176770";
-    const privateKey = "400f43a6baf239031c0c639cd7c5e2371f1ec89e"; // В реальном приложении его нельзя публиковать!
-    const ts = new Date().getTime(); 
+    const privateKey = "400f43a6baf239031c0c639cd7c5e2371f1ec89e"; // Для тестов. В продакшене убираем!
+    const ts = new Date().getTime();  
     const hash = md5(ts + privateKey + publicKey);
+
+    console.log("ts:", ts);
+    console.log("publicKey:", publicKey);
+    console.log("hash:", hash);
 
     const apiUrl = `https://gateway.marvel.com/v1/public/characters?ts=${ts}&apikey=${publicKey}&hash=${hash}`;
 
-    console.log("Запрос отправляется на API:", apiUrl);
+    console.log("Отправка запроса на API:", apiUrl);
 
     try {
         const response = await fetch(apiUrl);
+
         if (!response.ok) {
             throw new Error(`Ошибка HTTP: ${response.status} - ${response.statusText}`);
         }
+
         const data = await response.json();
 
-        console.log("Ответ API:", data);
+        console.log("Получены данные:", data);
 
         if (!data.data || !data.data.results || data.data.results.length === 0) {
             throw new Error("API вернуло пустые данные.");
