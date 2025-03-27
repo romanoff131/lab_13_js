@@ -83,7 +83,7 @@ function getCharacterModal(character) {
  */
 async function fetchCharacters() {
     const publicKey = "5d3eb0566587bd3984363d42e6176770";
-    const privateKey = "400f43a6baf239031c0c639cd7c5e2371f1ec89e"; // Для тестов. В продакшене убираем!
+    const privateKey = "400f43a6baf239031c0c639cd7c5e2371f1ec89e";
     const ts = new Date().getTime();  
     const hash = md5(ts + privateKey + publicKey);
 
@@ -119,6 +119,19 @@ async function fetchCharacters() {
         }));
     } catch (error) {
         console.error("Ошибка получения данных:", error);
+
+        let errorMsg = "Ошибка загрузки данных. Попробуйте позже.";
+        
+        if (error.message.includes("ECONNREFUSED")) {
+            errorMsg = "Ошибка соединения с сервером Marvel. Подождите несколько минут.";
+        } else if (error.message.includes("500")) {
+            errorMsg = "Ошибка сервера Marvel (500). Попробуйте снова позже.";
+        }
+
+        document.querySelector("#character-card-box").innerHTML = `
+            <p class="text-center text-danger">${errorMsg}</p>
+        `;
+
         return [];
     }
 }
