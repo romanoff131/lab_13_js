@@ -81,37 +81,30 @@ function getCharacterModal(character) {
 /**
  * Получить информацию о персонажах с API
  */
-function fetchCharacters() {
-    // URL API (замените API_KEY на ваш настоящий ключ)
-    const apiUrl = 'https://gateway.marvel.com/v1/public/characters?apikey=YOUR_API_KEY';
+async function fetchCharacters() {
+    const apiUrl = 'https://gateway.marvel.com/v1/public/characters?apikey=5d3eb0566587bd3984363d42e6176770';
 
-    // Запрос данных с API
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Ошибка HTTP: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Преобразуем полученные данные в массив объектов с нужными полями
-            const characters = data.data.results.map(character => ({
-                id: character.id,
-                name: character.name,
-                thumbnail: `${character.thumbnail.path}.${character.thumbnail.extension}`,
-                description: character.description || "Описание отсутствует",
-                modified: character.modified
-            }));
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+        const data = await response.json();
 
-            // Обновляем контейнер карточек в HTML
-            document.getElementById('cards-container').innerHTML = getCharacterCards(characters).join('');
+        // Преобразуем JSON в массив объектов
+        const characters = data.data.results.map(character => ({
+            id: character.id,
+            name: character.name,
+            thumbnail: `${character.thumbnail.path}.${character.thumbnail.extension}`,
+            description: character.description || "Описание отсутствует",
+            modified: character.modified
+        }));
 
-            // Обновляем контейнер модальных окон в HTML
-            document.getElementById('modals-container').innerHTML = getCharacterModals(characters).join('');
-        })
-        .catch(error => {
-            console.error('Ошибка получения данных:', error);
-        });
+        return characters; // Вернем данные в `start()`
+    } catch (error) {
+        console.error('Ошибка получения данных:', error);
+        return []; // Возвращаем пустой массив, чтобы избежать ошибок
+    }
 }
 
 /**
