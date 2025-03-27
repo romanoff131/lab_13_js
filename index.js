@@ -82,7 +82,12 @@ function getCharacterModal(character) {
  * Получить информацию о персонажах с API
  */
 async function fetchCharacters() {
-    const apiUrl = 'https://gateway.marvel.com/v1/public/characters?apikey=5d3eb0566587bd3984363d42e6176770';
+    const publicKey = "5d3eb0566587bd3984363d42e6176770"; 
+    const privateKey = "400f43a6baf239031c0c639cd7c5e2371f1ec89e"; // !!! Нет в коде, нельзя публиковать !!!
+    const ts = new Date().getTime(); // Уникальное значение
+    const hash = md5(ts + privateKey + publicKey); // Генерируем хеш (понадобится MD5 библиотека)
+
+    const apiUrl = `https://gateway.marvel.com/v1/public/characters?ts=${ts}&apikey=${publicKey}&hash=${hash}`;
 
     try {
         const response = await fetch(apiUrl);
@@ -91,7 +96,7 @@ async function fetchCharacters() {
         }
         const data = await response.json();
 
-        // Преобразуем JSON в массив объектов
+        // Обрабатываем JSON
         const characters = data.data.results.map(character => ({
             id: character.id,
             name: character.name,
@@ -100,10 +105,10 @@ async function fetchCharacters() {
             modified: character.modified
         }));
 
-        return characters; // Вернем данные в `start()`
+        return characters;
     } catch (error) {
-        console.error('Ошибка получения данных:', error);
-        return []; // Возвращаем пустой массив, чтобы избежать ошибок
+        console.error("Ошибка получения данных:", error);
+        return []; 
     }
 }
 
