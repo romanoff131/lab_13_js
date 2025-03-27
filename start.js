@@ -10,10 +10,12 @@ async function start() {
             throw new Error("Данные о персонажах не загружены.");
         }
 
-        characterCardBox.innerHTML = getCharacterCards(characters).join("");
-        characterModalBox.innerHTML = getCharacterModals(characters).join("");
+        characterCardBox.innerHTML = characters.map(getCharacterCard).join("");
+        characterModalBox.innerHTML = characters.map(getCharacterModal).join("");
     } catch (error) {
         console.error("Ошибка в start():", error);
         characterCardBox.innerHTML = `<p class="text-center text-danger">Ошибка загрузки данных: ${error.message}</p>`;
     }
 }
+
+document.addEventListener("DOMContentLoaded", start);

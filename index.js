@@ -1,7 +1,7 @@
 /**
  * Получить карточку персонажа
  *
- * @param character
+ * @param {Object} character
  * @returns {string}
  */
 function getCharacterCard(character) {
@@ -32,7 +32,7 @@ function getCharacterCard(character) {
 /**
  * Получить модальное окно персонажа
  *
- * @param character
+ * @param {Object} character
  * @returns {string}
  */
 function getCharacterModal(character) {
@@ -83,8 +83,10 @@ function getCharacterModal(character) {
  */
 async function fetchCharacters() {
     const publicKey = "5d3eb0566587bd3984363d42e6176770";
-    const privateKey = "400f43a6baf239031c0c639cd7c5e2371f1ec89e";
+    const privateKey = "400f43a6baf239031c0c639cd7c5e2371f1ec89e"; 
     const ts = new Date().getTime();  
+    
+    // Исправленный порядок генерации hash
     const hash = md5(ts + publicKey + privateKey);
 
     console.log("ts:", ts);
@@ -124,6 +126,8 @@ async function fetchCharacters() {
         
         if (error.message.includes("ECONNREFUSED")) {
             errorMsg = "Ошибка соединения с сервером Marvel. Подождите несколько минут.";
+        } else if (error.message.includes("401")) {
+            errorMsg = "Ошибка авторизации Marvel (401). Проверьте API-ключ.";
         } else if (error.message.includes("500")) {
             errorMsg = "Ошибка сервера Marvel (500). Попробуйте снова позже.";
         }
