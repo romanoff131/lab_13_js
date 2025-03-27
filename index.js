@@ -79,58 +79,40 @@ function getCharacterModal(character) {
 }
 
 /**
- * Получить информацию о персонажах с API
+ * Получить информацию о персонажах с API Marvel
  */
 async function fetchCharacters() {
-    const publicKey = "5d3eb0566587bd3984363d42e6176770"; 
-    const privateKey = "400f43a6baf239031c0c639cd7c5e2371f1ec89e"; // !!! Нет в коде, нельзя публиковать !!!
-    const ts = new Date().getTime(); // Уникальное значение
-    const hash = md5(ts + privateKey + publicKey); // Генерируем хеш (понадобится MD5 библиотека)
+    const publicKey = "5d3eb0566587bd3984363d42e6176770";
+    const privateKey = "400f43a6baf239031c0c639cd7c5e2371f1ec89e"; // В реальном приложении его нельзя публиковать!
+    const ts = new Date().getTime(); 
+    const hash = md5(ts + privateKey + publicKey);
 
     const apiUrl = `https://gateway.marvel.com/v1/public/characters?ts=${ts}&apikey=${publicKey}&hash=${hash}`;
+
+    console.log("Запрос отправляется на API:", apiUrl);
 
     try {
         const response = await fetch(apiUrl);
         if (!response.ok) {
-            throw new Error(`Ошибка HTTP: ${response.status}`);
+            throw new Error(`Ошибка HTTP: ${response.status} - ${response.statusText}`);
         }
         const data = await response.json();
 
-        // Обрабатываем JSON
-        const characters = data.data.results.map(character => ({
+        console.log("Ответ API:", data);
+
+        if (!data.data || !data.data.results || data.data.results.length === 0) {
+            throw new Error("API вернуло пустые данные.");
+        }
+
+        return data.data.results.map(character => ({
             id: character.id,
             name: character.name,
             thumbnail: `${character.thumbnail.path}.${character.thumbnail.extension}`,
             description: character.description || "Описание отсутствует",
             modified: character.modified
         }));
-
-        return characters;
     } catch (error) {
         console.error("Ошибка получения данных:", error);
-        return []; 
+        return [];
     }
 }
-
-/**
- * Получить массив карточек персонажей
- *
- * @param characters
- * @returns {Array}
- */
-function getCharacterCards(characters) {
-    return characters.map(character => getCharacterCard(character));
-}
-
-/**
- * Получить массив модальных окон персонажей
- *
- * @param characters
- * @returns {Array}
- */
-function getCharacterModals(characters) {
-    return characters.map(character => getCharacterModal(character));
-}
-
-// Запустить загрузку персонажей при загрузке страницы
-document.addEventListener("DOMContentLoaded", fetchCharacters);
